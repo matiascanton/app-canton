@@ -1,78 +1,37 @@
 import { useState } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, Button, View, FlatList, Modal } from 'react-native';
-import AddItem from './components/AddItem/AddItem'
+import { useFonts } from 'expo-font';
+import AppLoading from 'expo-app-loading';
+import Typography from './constants/Typography';
+import List from './screen/List';
+import Home from './screen/Home';
 
 export default function App() {
-  const [textInput, setTextInput] = useState('')
-  const [itemList, setItemList] = useState([])
 
-  const [itemSelected, setItemSelected] = useState({})
-  const [modalVisible, setModalVisible] = useState(false)
+  const [loaded] = useFonts({
+    Lato: require('./assets/fonts/RobotoCondensed-Regular.ttf'),
+    [Typography.titleFont]: require('./assets/fonts/RobotoCondensed-Regular.ttf'),
+  })
+  const [list, setList] = useState();
 
-  const handleChangeText = (text) => {
-    setTextInput(text)
+  const handleConfirm = itemList => {
+    setList(itemList);
   }
 
-  const handleOnPress = () => {
-    setTextInput('')
-    setItemList([
-      ...itemList,
-      {
-        value: textInput,
-        id: Math.random().toString(),
-      },
-    ])
+  let content = <List confirm={handleConfirm} />
+
+  if (!loaded) return <AppLoading />
+
+  if (list) {
+    content = <Home useList={list} />
   }
 
-  const handleOnDelete = (item) => () => {
-    setModalVisible(true)
-    setItemSelected(item)
-  }
-
-  const handleConfirmDelete = () => {
-    const { id } = itemSelected
-    setItemList(itemList.filter(item => item.id !== id))
-    setModalVisible(false)
-    setItemSelected({})
-  }
 
   return (
     <View style={styles.bodyapp}>
       <View style={styles.container}>
-        <AddItem
-          textInput={textInput}
-          handleOnPress={handleOnPress}
-          handleChangeText={handleChangeText}
-        />
-
-        <FlatList
-          data={itemList}
-          renderItem={({ item }) => (
-            <View style={styles.item}>
-              <Text>{item.value}</Text>
-              <Button onPress={handleOnDelete(item)} title="X" />
-            </View>
-          )
-          }
-          keyExtractor={item => item.id}
-        />
-
-        <Modal animationType='slide' visible={modalVisible}>
-          <View>
-            <View>
-              <Text>¿Está seguro que desea eliminar?</Text>
-              <Text>{itemSelected.value}</Text>
-            </View>
-            <View>
-              <Button
-                onPress={handleConfirmDelete}
-                title="CONFIRMAR"
-              />
-            </View>
-          </View>
-        </Modal>
-
+        {content}
         <StatusBar style="auto" />
       </View>
     </View>
