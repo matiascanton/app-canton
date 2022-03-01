@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, Button, View, FlatList, Modal } from 'react-native';
+import { NavigationContainer } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
 import AppLoading from 'expo-app-loading';
 import Typography from './constants/Typography';
@@ -29,12 +30,18 @@ export default function App() {
 
 
   return (
-    <View style={styles.bodyapp}>
+    <NavigationContainer>
+      <Stack.Navigator>
+        <Stack.Screen name="Home" component={Home} />
+        <Stack.Screen name="List" component={List} />
+      </Stack.Navigator>
+    </NavigationContainer>
+    /*<View style={styles.bodyapp}>
       <View style={styles.container}>
         {content}
         <StatusBar style="auto" />
       </View>
-    </View>
+    </View>*/
   );
 }
 
